@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3U CubeSat Diagram</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            margin: 0;
+            padding: 20px;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .cubesat-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            perspective: 1000px;
+        }
+        
+        .cubesat {
+            width: 140px;
+            height: 420px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-5deg) rotateY(15deg);
+            margin: 0 50px;
+        }
+        
+        .unit {
+            width: 140px;
+            height: 140px;
+            position: absolute;
+            border: 2px solid #4ecdc4;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 107, 107, 0.1));
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            padding: 8px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .unit:hover {
+            transform: translateZ(10px);
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
+        }
+        
+        .unit-1 { top: 0px; background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 154, 0, 0.15)); border-color: #ff6b6b; }
+        .unit-2 { top: 140px; background: linear-gradient(135deg, rgba(78, 205, 196, 0.15), rgba(0, 212, 255, 0.15)); border-color: #4ecdc4; }
+        .unit-3 { top: 280px; background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(138, 43, 226, 0.15)); border-color: #00d4ff; }
+        
+        .unit-title {
+            font-weight: bold;
+            font-size: 0.75em;
+            text-align: center;
+            margin-bottom: 6px;
+            padding: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            border-bottom: 2px solid currentColor;
+            line-height: 1.1;
+        }
+        
+        .component {
+            font-size: 0.65em;
+            margin: 1px 0;
+            padding: 2px 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            border-left: 2px solid;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+        
+        .component:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+        
+        /* Component color coding */
+        .payload { border-left-color: #ff6b6b; }
+        .subsystem { border-left-color: #4ecdc4; }
+        .power { border-left-color: #ffd93d; }
+        .comms { border-left-color: #6bcf7f; }
+        .structure { border-left-color: #a8a8a8; }
+        
+        .antenna {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 30px;
+            background: linear-gradient(45deg, #ffd93d, #ffb347);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4);
+        }
+        
+        .solar-panel {
+            position: absolute;
+            top: 60px;
+            left: -30px;
+            width: 25px;
+            height: 280px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            border-radius: 4px;
+            transform: rotateY(90deg);
+            box-shadow: 0 0 20px rgba(42, 82, 152, 0.5);
+        }
+        
+        .solar-panel::after {
+            content: 'Solar Panel';
+            position: absolute;
+            top: 50%;
+            left: -40px;
+            transform: translateY(-50%) rotate(-90deg);
+            font-size: 0.7em;
+            white-space: nowrap;
+            color: #2a5298;
+            font-weight: bold;
+        }
+        
+        .specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .spec-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .spec-section h3 {
+            color: #4ecdc4;
+            margin-top: 0;
+            font-size: 1.2em;
+            border-bottom: 2px solid #4ecdc4;
+            padding-bottom: 8px;
+        }
+        
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotateX(-5deg) rotateY(15deg); }
+            50% { transform: translateY(-10px) rotateX(-5deg) rotateY(15deg); }
+        }
+        
+        .cubesat {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Neuman 3U SpaceDrone Architecture</h1>
+        
+        <div class="legend">
+            <div class="legend-item" style="border-color: #ff6b6b;">
+                <div class="legend-color" style="background: #ff6b6b;"></div>
+                <span>Payload Instruments</span>
+            </div>
+            <div class="legend-item" style="border-color: #4ecdc4;">
+                <div class="legend-color" style="background: #4ecdc4;"></div>
+                <span>Subsystems</span>
+            </div>
+            <div class="legend-item" style="border-color: #ffd93d;">
+                <div class="legend-color" style="background: #ffd93d;"></div>
+                <span>Power Systems</span>
+            </div>
+            <div class="legend-item" style="border-color: #6bcf7f;">
+                <div class="legend-color" style="background: #6bcf7f;"></div>
+                <span>Communications</span>
+            </div>
+        </div>
+        
+        <div class="cubesat-container">
+            <div class="cubesat">
+                <div class="antenna">High-Gain Antenna</div>
+                <div class="solar-panel"></div>
+                
+                <!-- Unit 1: Upper Payload Bay -->
+                <div class="unit unit-1">
+                    <div class="unit-title">Unit 1: Upper Payload Bay (1U)</div>
+                    <div class="component payload">IR Telescope/Camera (0.2U)</div>
+                    <div class="component payload">Meteoroid Impact Monitor (0.1U)</div>
+                    <div class="component payload">Miniature Spectrometer (0.1U)</div>
+                    <div class="component payload">Mini Lidar (0.05U)</div>
+                    <div class="component structure">Payload Bay Structure (0.5U)</div>
+                </div>
+                
+                <!-- Unit 2: Middle Systems -->
+                <div class="unit unit-2">
+                    <div class="unit-title">Unit 2: Middle Systems (1U)</div>
+                    <div class="component payload">50MP Camera (0.05U)</div>
+                    <div class="component payload">Magnetometer (0.05U)</div>
+                    <div class="component payload">X-ray Flux Monitor (0.1U)</div>
+                    <div class="component payload">Solar Wind Analyzer (0.1U)</div>
+                    <div class="component payload">Particle Detector (0.1U)</div>
+                    <div class="component payload">Plasma Density Sensor (0.05U)</div>
+                </div>
+                
+                <!-- Unit 3: Base Systems -->
+                <div class="unit unit-3">
+                    <div class="unit-title">Unit 3: Base Systems (1U)</div>
+                    <div class="component subsystem">Onboard Computer (0.05U)</div>
+                    <div class="component subsystem">ADCS (0.05U)</div>
+                    <div class="component subsystem">Atomic Clock (0.02U)</div>
+                    <div class="component power">EPS & Battery (0.1U)</div>
+                    <div class="component comms">UHF/VHF Comms (0.02U)</div>
+                    <div class="component comms">Laser Comms (0.1U)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="specs">
+            <div class="spec-section">
+                <h3>Primary Payload Instruments</h3>
+                <div class="spec-item">
+                    <span>Infrared Telescope/Camera</span>
+                    <span>0.2U</span>
+                </div>
+                <div class="spec-item">
+                    <span>50MP Imaging Camera</span>
+                    <span>0.05U</span>
+                </div>
+                <div class="spec-item">
+                    <span>Miniature Spectrometer</span>
+                    <span>0.1U</span>
+                </div>
+                <div class="spec-item">
+                    <span>Meteoroid Impact Monitor</span>
+                    <span>0.1U</span>
+                </div>
+                <div class="spec-item">
+                    <span>Mini Lidar System</span>
+                    <span>0.05U</span>
+                </div>
+            </div>
+            
+            <div class="spec-section">
+                <h3>Space Environment Sensors</h3>
+                <div class="spec-item">
+                    <span>X-ray Flux Monitor</span>
+                    <span>0.1U</span>
+                </div>
+                <div class="spec-item">
+                    <span>Solar Wind Plasma Analyzer</span>
+                    <span>0.1U</span>
+                </div>
+                <div class="spec-item">
+                    <span>Energetic Particle Detector</span>
+                    <span>0.1U</span>
+                </div>
+                <div class="spec-item">
+                    <span>Plasma Density Sensor</span>
+                    <span>0.05U</span>
+                </div>
+                <div class="spec-item">
+                    <span>Miniature Magnetometer</span>
+                    <span>0.05U</span>
+                </div>
+            </div>
+            
+            <div class="spec-section">
+                <h3>Core Subsystems</h3>
+                <div class="spec-item">
+                    <span>Onboard Computer</span>
+                    <span>0.05U</span>
+                </div>
+                <div class="spec-item">
+                    <span>ADCS (Attitude Control)</span>
+                    <span>0.05U</span>
+                </div>
+                <div class="spec-item">
+                    <span>Chip-Scale Atomic Clock</span>
+                    <span>0.02U</span>
+                </div>
+                <div class="spec-item">
+                    <span>EPS & Battery Pack</span>
+                    <span>0.1U</span>
+                </div>
+                <div class="spec-item">
+                    <span>Structural Framework</span>
+                    <span>0.2-0.5U</span>
+                </div>
+            </div>
+            
+            <div class="spec-section">
+                <h3>Communication Systems</h3>
+                <div class="spec-item">
+                    <span>Deployable High-Gain Antenna</span>
+                    <span>External</span>
+                </div>
+                <div class="spec-item">
+                    <span>UHF/VHF Communications</span>
+                    <span>0.02U</span>
+                </div>
+                <div class="spec-item">
+                    <span>S-band Data Downlink</span>
+                    <span>0.02U</span>
+                </div>
+                <div class="spec-item">
+                    <span>Laser Communication Terminal</span>
+                    <span>0.1U</span>
+                </div>
+                <div class="spec-item">
+                    <span>Optical Relay Module</span>
+                    <span>0.1U</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
